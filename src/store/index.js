@@ -25,17 +25,17 @@ const store = createStore({
     folders: [
       {
         title: "All Notes",
-        icon: "/images/icons/note.svg",
+        icon: "./images/icons/note.svg",
         notes: [1, 2],
       },
       {
         title: "Pinned Notes",
-        icon: "/images/icons/pin.svg",
+        icon: "./images/icons/pin.svg",
         notes: [2],
       },
       {
         title: "Notebooks",
-        icon: "/images/icons/notebooks.svg",
+        icon: "./images/icons/notebooks.svg",
         notes: [1],
         folders: [
           {
@@ -72,39 +72,39 @@ const store = createStore({
       },
       {
         title: "Trash",
-        icon: "/images/icons/trash.svg",
+        icon: "./images/icons/trash.svg",
         notes: [],
       },
       {
         title: "Status",
-        icon: "/images/icons/status.svg",
+        icon: "./images/icons/status.svg",
         expand: true,
         folders: [
           {
             title: "Active",
-            icon: "/images/icons/status.svg",
+            icon: "./images/icons/status.svg",
             notes: [],
           },
           {
             title: "On Hold",
-            icon: "/images/icons/status.svg",
+            icon: "./images/icons/status.svg",
             notes: [],
           },
           {
             title: "Completed",
-            icon: "/images/icons/status.svg",
+            icon: "./images/icons/status.svg",
             notes: [],
           },
           {
             title: "Dropped",
-            icon: "/images/icons/status.svg",
+            icon: "./images/icons/status.svg",
             notes: [],
           },
         ],
       },
       {
         title: "Tags",
-        icon: "/images/icons/tags.svg",
+        icon: "./images/icons/tags.svg",
         expand: true,
         folders: [
           {

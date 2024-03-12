@@ -81,7 +81,6 @@ import { useStore } from "vuex";
 const store = useStore();
 const props = defineProps(["folder"]);
 const isOpen = ref(true);
-// let test = store.getters.notesCount;
 
 // Select Folder
 function selectFolder(folder) {
