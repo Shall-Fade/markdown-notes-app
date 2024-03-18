@@ -36,11 +36,6 @@
       v-if="folder.expand"
       type="button"
     >
-      <!-- <img
-        class="w-full h-full"
-        src="/images/icons/angle-down.svg"
-        alt="Angle"
-      /> -->
       <svg
         viewBox="0 0 16 16"
         xmlns="http://www.w3.org/2000/svg"

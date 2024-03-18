@@ -226,8 +226,10 @@ function addTitle(title) {
 
 // Add New Tag
 function addTag(tag) {
-  selectedNote.value.tags.push(tag);
-  newTag.value = "";
+  if (tag !== "" && tag.length <= 15) {
+    selectedNote.value.tags.push(tag);
+    newTag.value = "";
+  }
 }
 
 // Select Status

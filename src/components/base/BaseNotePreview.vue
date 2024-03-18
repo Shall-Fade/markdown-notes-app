@@ -7,11 +7,11 @@
       </span>
     </div>
     <div class="flex items-center gap-x-[5px]">
-      <span class="text-blue text-[14px]">
+      <span class="text-blue text-[14px] whitespace-nowrap">
         <slot name="date"></slot>
       </span>
       <!-- Tags List -->
-      <ul class="flex items-center gap-[5px] text-[12px]">
+      <ul class="flex items-center gap-[5px] text-[12px] overflow-hidden w-full">
         <slot name="tags"></slot>
       </ul>
     </div>

@@ -9,16 +9,35 @@
         />
       </button>
       <span>{{ selectedFolder }}</span>
-      <button type="button" @click="createNote()">
-        <img
-          class="w-[20px] h-[20px]"
-          src="/images/icons/write-note.svg"
-          alt="Create Note"
-        />
-      </button>
+      <!-- Notes Create Button -->
+      <div>
+        <button
+          v-if="selectedFolder !== 'Trash'"
+          type="button"
+          @click="createNote()"
+        >
+          <img
+            class="w-[20px] h-[20px]"
+            src="/images/icons/write-note.svg"
+            alt="Create Note"
+          />
+        </button>
+      </div>
     </div>
     <!-- Notes Search Block -->
-    <NotesBlockSearch />
+    <div class="flex items-center relative px-[20px] mb-[10px]">
+      <img
+        class="absolute ml-[10px] w-[20px] h-[20px]"
+        src="/images/icons/search.svg"
+        alt="Search"
+      />
+      <input
+        class="w-full rounded-[3px] py-[5px] pl-[40px] pr-[10px] text-white bg-dark-grey placeholder:text-light-grey outline-none"
+        type="text"
+        placeholder="Search"
+        v-model="searchNote"
+      />
+    </div>
     <!-- Notes List -->
     <ul class="text-[16px]">
       <!-- Note -->
@@ -29,7 +48,7 @@
           <template v-slot:tags>
             <li
               v-for="tag in note.tags"
-              class="flex items-center justify-center text-white bg-[purple] px-[5px] py-[1px] rounded-[10px]"
+              class="flex items-center justify-center text-white bg-[purple] px-[5px] py-[1px] rounded-[10px] whitespace-nowrap"
             >
               {{ tag }}
             </li>
@@ -44,8 +63,7 @@
 </template>
 
 <script setup>
-import NotesBlockSearch from "./NotesBlockSearch.vue";
-import { computed, onMounted } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 
 // Variables
@@ -54,11 +72,15 @@ const notes = computed(() => store.state.notes);
 const folders = computed(() => store.state.folders);
 const selectedFolder = computed(() => store.state.selectedFolder);
 const selectedNote = computed(() => store.state.selectedNote);
+const searchNote = ref("");
 
 // Display Notes
 function displayNotes(note) {
   for (let i = 0; i < note.folder.length; i++) {
-    if (note.folder[i] === selectedFolder.value) {
+    if (
+      note.folder[i] === selectedFolder.value &&
+      note.title.toLowerCase().includes(searchNote.value.toLowerCase())
+    ) {
       return true;
     }
   }
@@ -101,12 +123,24 @@ function createNote() {
     date: getDate(),
   });
 
-  for (let i = 0; i < folders.value.length; i++) {
-    if (
-      selectedFolder.value === folders.value[i].title ||
-      folders.value[i].title === "All Notes"
-    ) {
-      folders.value[i].notes.push(currentId);
+  // Add a note to the selected folder
+  findFolder(folders.value, selectedFolder.value, currentId);
+
+  // Select a note after creating it
+  for (let i = 0; i < notes.value.length; i++) {
+    if (notes.value[i].id === currentId) {
+      store.commit("SELECT_NOTE", notes.value[i]);
+    }
+  }
+}
+
+// Find Folder
+function findFolder(arr, selectedFolder, id) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].title === selectedFolder || arr[i].title === "All Notes") {
+      arr[i].notes.push(id);
+    } else if ("folders" in arr[i]) {
+      findFolder(arr[i].folders, selectedFolder, id);
     }
   }
 }
