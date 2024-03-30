@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/components": "^10.9.0",
+    "@vueuse/core": "^10.9.0",
     "vue": "^3.4.19",
     "vue-router": "^4.3.0",
     "vuex": "^4.0.2"

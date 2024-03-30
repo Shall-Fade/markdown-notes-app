@@ -1,6 +1,6 @@
 <template>
   <div class="col-span-2 bg-black h-screen overflow-y-auto">
-    <div class="flex items-center justify-between px-[20px] py-[15px]">
+    <div class="relative flex items-center justify-between px-[20px] py-[15px]">
       <button type="button">
         <img
           class="w-[25px] h-[25px]"
@@ -8,11 +8,14 @@
           alt="Sort"
         />
       </button>
-      <span>{{ selectedFolder }}</span>
+      <span>{{ selectedFolder.title }}</span>
       <!-- Notes Create Button -->
       <div>
         <button
-          v-if="selectedFolder !== 'Trash'"
+          v-if="
+            selectedFolder.title !== 'Trash' &&
+            selectedFolder.title !== 'Notebooks'
+          "
           type="button"
           @click="createNote()"
         >
@@ -22,6 +25,22 @@
             alt="Create Note"
           />
         </button>
+        <div v-if="selectedFolder.title === 'Notebooks'">
+          <button
+            type="button"
+            @click="isVisibleFolderModal = !isVisibleFolderModal"
+          >
+            <img
+              class="w-[20px] h-[20px]"
+              src="/images/icons/write-note.svg"
+              alt="Create Note"
+            />
+          </button>
+          <form @keyup.esc="isVisibleFolderModal = !isVisibleFolderModal" @keyup.enter="createFolder()" v-if="isVisibleFolderModal" class="absolute flex bg-medium-grey left-0 right-0 mt-[15px] z-[9999]">
+            <input v-model="folderTitleValue" class="outline-none px-[20px] py-[5px] text-black font-medium" type="text" placeholder="Folder title...">
+            <button @click="createFolder()" class="bg-blue w-full hover:bg-blue/70 duration-200" type="submit">Save</button>
+          </form>
+        </div>
       </div>
     </div>
     <!-- Notes Search Block -->
@@ -39,7 +58,7 @@
       />
     </div>
     <!-- Notes List -->
-    <ul class="text-[16px]">
+    <ul v-if="selectedFolder.title !== 'Notebooks'" class="text-[16px]">
       <!-- Note -->
       <li v-for="note in notes">
         <base-note-preview v-if="displayNotes(note)" @click="openNote(note)">
@@ -59,12 +78,21 @@
         </base-note-preview>
       </li>
     </ul>
+    <!-- Folders List -->
+    <ul v-if="selectedFolder.title === 'Notebooks'" class="text-[16px]">
+      <!-- Folder -->
+      <li v-for="folder in selectedFolder.folders">
+        <base-folder-preview :folder="folder" :key="index">
+        </base-folder-preview>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+// import { vOnClickOutside } from '@vueuse/components';
 
 // Variables
 const store = useStore();
@@ -73,12 +101,14 @@ const folders = computed(() => store.state.folders);
 const selectedFolder = computed(() => store.state.selectedFolder);
 const selectedNote = computed(() => store.state.selectedNote);
 const searchNote = ref("");
+const folderTitleValue = ref("");
+const isVisibleFolderModal = ref(false);
 
 // Display Notes
 function displayNotes(note) {
   for (let i = 0; i < note.folder.length; i++) {
     if (
-      note.folder[i] === selectedFolder.value &&
+      note.folder[i] === selectedFolder.value.title &&
       note.title.toLowerCase().includes(searchNote.value.toLowerCase())
     ) {
       return true;
@@ -116,7 +146,7 @@ function createNote() {
   notes.value.push({
     id: currentId,
     title: "",
-    folder: ["All Notes", `${selectedFolder.value}`],
+    folder: ["All Notes", `${selectedFolder.value.title}`],
     status: "",
     tags: [],
     content: "",
@@ -124,7 +154,7 @@ function createNote() {
   });
 
   // Add a note to the selected folder
-  findFolder(folders.value, selectedFolder.value, currentId);
+  findFolder(folders.value, selectedFolder.value.title, currentId);
 
   // Select a note after creating it
   for (let i = 0; i < notes.value.length; i++) {
@@ -132,6 +162,20 @@ function createNote() {
       store.commit("SELECT_NOTE", notes.value[i]);
     }
   }
+
+  searchNote.value = "";
+}
+
+// Create Folder
+function createFolder() {
+  if (selectedFolder.value.title === "Notebooks" && folderTitleValue.value !== "") {
+    selectedFolder.value.folders.push({
+      title: `${folderTitleValue.value}`,
+      notes: [],
+    });
+  }
+
+  isVisibleFolderModal.value = false;
 }
 
 // Find Folder

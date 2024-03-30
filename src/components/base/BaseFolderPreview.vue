@@ -4,17 +4,6 @@
     class="flex items-center justify-between cursor-pointer px-[20px] duration-100 hover:bg-blue/30"
   >
     <div class="relative flex items-center gap-[5px]">
-      <!-- <button
-        v-if="folder.folders && !folder.icon"
-        class="absolute left-[-25px] w-[20px] h-[20px]"
-        type="button"
-      >
-        <img
-          class="w-full h-full"
-          src="/images/icons/angle-down.svg"
-          alt="Note"
-        />
-      </button> -->
       <img
         v-if="folder.icon"
         class="w-[20px] h-[20px]"
@@ -56,10 +45,19 @@
         </g>
       </svg>
     </button>
-    <span v-else class="text-[14px] text-light-grey/50">{{ folder.notes.length }}</span>
+    <span
+      v-if="folder.title === 'Notebooks' && !folder.expand"
+      class="text-[14px] text-light-grey/50"
+      >{{ folder.folders.length }}</span
+    >
+    <span
+      v-if="folder.title !== 'Notebooks' && !folder.expand"
+      class="text-[14px] text-light-grey/50"
+      >{{ folder.notes.length }}</span
+    >
   </div>
   <ul
-    v-if="folder.folders && isOpen"
+    v-if="folder.folders && isOpen && folder.title !== 'Notebooks'"
     class="flex flex-col gap-y-[5px] ml-[20px] mt-[5px]"
   >
     <li v-for="(folder, index) in folder.folders">
@@ -82,7 +80,7 @@ function selectFolder(folder) {
   if (folder.expand) {
     isOpen.value = !isOpen.value;
   } else {
-    store.commit("SELECT_FOLDER", folder.title);
+    store.commit("SELECT_FOLDER", folder);
   }
 }
 </script>

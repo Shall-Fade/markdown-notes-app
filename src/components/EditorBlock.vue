@@ -15,7 +15,60 @@
           @blur="addTitle(selectedNote.title)"
           @keypress.enter="addTitle(selectedNote.title)"
         />
-        <button type="button">Settings</button>
+        <div class="relative">
+          <button
+            @click="isVisibleMenu = !isVisibleMenu"
+            class="w-[25px] h-[25px] cursor-pointer"
+            type="button"
+          >
+            <svg
+              version="1.1"
+              id="_x32_"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              xml:space="preserve"
+              fill="#ffffff"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <g>
+                  <circle class="st0" cx="256" cy="55.091" r="55.091"></circle>
+                  <circle class="st0" cx="256" cy="256" r="55.091"></circle>
+                  <circle class="st0" cx="256" cy="456.909" r="55.091"></circle>
+                </g>
+              </g>
+            </svg>
+          </button>
+          <ul
+            v-if="isVisibleMenu"
+            class="absolute flex flex-col right-0 min-w-[200px] bg-medium-grey py-[10px] rounded-[5px] mt-[10px]"
+          >
+            <li>
+              <button
+                v-if="selectedFolder.title === 'Trash'"
+                @click="recoverNote()"
+                class="duration-100 hover:bg-blue/50 px-[15px] text-[16px] text-left w-full"
+                type="button"
+              >
+                Recover
+              </button>
+              <button
+                v-else
+                @click="removeNote()"
+                class="duration-100 hover:bg-blue/50 px-[15px] text-[16px] text-left w-full"
+                type="button"
+              >
+                Delete
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
       <!-- Tags Block -->
       <div class="flex items-start gap-x-[10px] mb-[15px]">
@@ -203,11 +256,13 @@ import { computed, onMounted, ref } from "vue";
 const store = useStore();
 const notes = computed(() => store.state.notes);
 const selectedNote = computed(() => store.state.selectedNote);
+const selectedFolder = computed(() => store.state.selectedFolder);
 const isEditMode = ref(false);
 const isOpen = ref(false);
 const statusList = ref(["Active", "On Hold", "Completed", "Dropped"]);
 const currentNoteStatus = ref(selectedNote.value.status);
 const newTag = ref("");
+const isVisibleMenu = ref(false);
 
 // Toggle Editor Mode
 function toggleEditorMode() {
@@ -251,6 +306,31 @@ function removeTag(tag) {
       selectedNote.value.tags.splice(i, 1);
     }
   }
+}
+
+// Remove Note From Folder
+function removeNote() {
+  for (let i = 0; i < notes.value.length; i++) {
+    if (selectedNote.value.id === notes.value[i].id) {
+      notes.value[i].folder = ["Trash"];
+    }
+  }
+
+  for(let i = 0; i < selectedFolder.value.notes.length; i++) {
+    if(selectedFolder.value.notes[i] === selectedNote.value.id) {
+      selectedFolder.value.notes.splice(i, 1);
+      console.log(selectedFolder.value.notes);
+    }
+  }
+  isVisibleMenu.value = false;
+  store.commit("SELECT_NOTE", "");
+}
+
+// Recover Note From Trash Folder
+function recoverNote() {
+  selectedNote.value.folder = ["All Notes"];
+  isVisibleMenu.value = false;
+  store.commit("SELECT_NOTE", "");
 }
 
 // Edit The Main Note

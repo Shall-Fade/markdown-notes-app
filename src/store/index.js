@@ -36,7 +36,7 @@ const store = createStore({
       {
         title: "Notebooks",
         icon: "./images/icons/notebooks.svg",
-        notes: [1],
+        // notes: [1],
         folders: [
           {
             title: "Blog",
@@ -48,21 +48,7 @@ const store = createStore({
           },
           {
             title: "Project",
-            expand: true,
-            folders: [
-              {
-                title: "Desktop app",
-                notes: [],
-              },
-              {
-                title: "IOS app",
-                notes: [1],
-              },
-              {
-                title: "Android app",
-                notes: [],
-              },
-            ],
+            notes: [],
           },
           {
             title: "Tips",
@@ -130,7 +116,11 @@ const store = createStore({
         ],
       },
     ],
-    selectedFolder: "All Notes",
+    selectedFolder: {
+      title: "All Notes",
+      icon: "./images/icons/note.svg",
+      notes: [1, 2],
+    },
     selectedNote: "",
   },
   mutations: {
